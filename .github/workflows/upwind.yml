@@ -33,4 +33,4 @@ jobs:
           UPWIND_CLIENT_SECRET: ${{ secrets.UPWIND_CLIENT_SECRET }}
         run: |
           # TODO: replace with the exact scan subcommand/flags from Upwind docs
-          shiftleft --filename "$GITHUB_WORKSPACE" --scan-secrets=true
+          shiftleft file "$GITHUB_WORKSPACE" --scan-secrets=true
