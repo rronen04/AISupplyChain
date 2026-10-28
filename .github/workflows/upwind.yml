@@ -1,0 +1,36 @@
+name: Upwind ShiftLeft Scan
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  shiftleft-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Upwind ShiftLeft CLI
+        run: |
+          OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+          ARCH=$([ "$(uname -m)" = "x86_64" ] && echo amd64 || echo arm64)
+
+          curl -fsS -L "https://releases.upwind.io/shiftleft/stable/$OS/$ARCH/shiftleft-$OS-$ARCH" \
+            -o shiftleft && chmod +x shiftleft
+
+          sudo mv shiftleft /usr/local/bin/shiftleft
+          shiftleft --help
+
+      - name: Run ShiftLeft scan
+        env:
+          # Add these in Settings > Secrets and variables > Actions.
+          # Rename to match what the CLI expects (see `shiftleft --help`).
+          UPWIND_CLIENT_ID: ${{ secrets.UPWIND_CLIENT_ID }}
+          UPWIND_CLIENT_SECRET: ${{ secrets.UPWIND_CLIENT_SECRET }}
+        run: |
+          # TODO: replace with the exact scan subcommand/flags from Upwind docs
+          shiftleft scan -filename "$GITHUB_WORKSPACE" --scan-secrets true
